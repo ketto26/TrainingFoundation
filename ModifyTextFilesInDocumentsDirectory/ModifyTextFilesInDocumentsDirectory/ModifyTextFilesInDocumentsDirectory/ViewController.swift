@@ -10,183 +10,165 @@ import UIKit
 class ViewController: UIViewController {
 
     // MARK: - UI Elements
-     var inputTextField: UITextField!
+    var inputTextField: UITextField!
+    var outputTextView: UITextView!
+    var saveButton: UIButton!
+    var loadButton: UIButton!
+    var statusLabel: UILabel!
 
-     var outputTextView: UITextView!
+    // MARK: - Constants
+    let kSavedTextFilename = "user_saved_texts.txt" 
 
-     var saveButton: UIButton!
+    // MARK: - Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        setupActions()
+        view.backgroundColor = .lightGray
+        title = "File Operations"
+    }
 
-     var loadButton: UIButton!
+    // MARK: - UI Setup
+    func setupUI() {
+        inputTextField = UITextField()
+        inputTextField.placeholder = "Enter text to save"
+        inputTextField.borderStyle = .roundedRect
+        inputTextField.translatesAutoresizingMaskIntoConstraints = false
+        inputTextField.backgroundColor = .white
+        inputTextField.textColor = .black
+        view.addSubview(inputTextField)
 
-     var statusLabel: UILabel!
+        saveButton = UIButton(type: .system)
+        saveButton.setTitle("Save Text", for: .normal)
+        saveButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        saveButton.backgroundColor = .blue
+        saveButton.setTitleColor(.white, for: .normal)
+        saveButton.layer.cornerRadius = 10
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(saveButton)
 
-     // MARK: - Lifecycle
-     override func viewDidLoad() {
-         super.viewDidLoad()
-         setupUI()
-         setupActions()
-         view.backgroundColor = .lightGray
-         title = "File Operations"
-     }
+        loadButton = UIButton(type: .system)
+        loadButton.setTitle("Load All Texts", for: .normal)
+        loadButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        loadButton.backgroundColor = .green
+        loadButton.setTitleColor(.white, for: .normal)
+        loadButton.layer.cornerRadius = 10
+        loadButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadButton)
 
-     // MARK: - UI Setup
-     func setupUI() {
-         inputTextField = UITextField()
-         inputTextField.placeholder = "Enter text to save"
-         inputTextField.borderStyle = .roundedRect
-         inputTextField.translatesAutoresizingMaskIntoConstraints = false
-         inputTextField.backgroundColor = .white
-         inputTextField.textColor = .black
-         view.addSubview(inputTextField)
+        outputTextView = UITextView()
+        outputTextView.isEditable = false
+        outputTextView.layer.borderColor = UIColor.darkGray.cgColor
+        outputTextView.layer.borderWidth = 1.0
+        outputTextView.layer.cornerRadius = 8.0
+        outputTextView.translatesAutoresizingMaskIntoConstraints = false
+        outputTextView.backgroundColor = .white
+        outputTextView.textColor = .black
+        outputTextView.font = UIFont.systemFont(ofSize: 16)
+        view.addSubview(outputTextView)
 
-         saveButton = UIButton(type: .system)
-         saveButton.setTitle("Save Text", for: .normal)
-         saveButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-         saveButton.backgroundColor = .blue
-         saveButton.setTitleColor(.white, for: .normal)
-         saveButton.layer.cornerRadius = 10
-         saveButton.translatesAutoresizingMaskIntoConstraints = false
-         view.addSubview(saveButton)
+        statusLabel = UILabel()
+        statusLabel.textAlignment = .center
+        statusLabel.textColor = .gray
+        statusLabel.font = UIFont.systemFont(ofSize: 14)
+        statusLabel.numberOfLines = 0
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(statusLabel)
 
-         loadButton = UIButton(type: .system)
-         loadButton.setTitle("Load All Texts", for: .normal)
-         loadButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-         loadButton.backgroundColor = .green
-         loadButton.setTitleColor(.white, for: .normal)
-         loadButton.layer.cornerRadius = 10
-         loadButton.translatesAutoresizingMaskIntoConstraints = false
-         view.addSubview(loadButton)
+        NSLayoutConstraint.activate([
+            inputTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            inputTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            inputTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            inputTextField.heightAnchor.constraint(equalToConstant: 40),
 
-         outputTextView = UITextView()
-         outputTextView.isEditable = false
-         outputTextView.layer.borderColor = UIColor.darkGray.cgColor
-         outputTextView.layer.borderWidth = 1.0
-         outputTextView.layer.cornerRadius = 8.0
-         outputTextView.translatesAutoresizingMaskIntoConstraints = false
-         outputTextView.backgroundColor = .white
-         outputTextView.textColor = .black
-         outputTextView.font = UIFont.systemFont(ofSize: 16)
-         view.addSubview(outputTextView)
+            saveButton.topAnchor.constraint(equalTo: inputTextField.bottomAnchor, constant: 20),
+            saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            saveButton.heightAnchor.constraint(equalToConstant: 50),
 
-         statusLabel = UILabel()
-         statusLabel.textAlignment = .center
-         statusLabel.textColor = .gray
-         statusLabel.font = UIFont.systemFont(ofSize: 14)
-         statusLabel.numberOfLines = 0
-         statusLabel.translatesAutoresizingMaskIntoConstraints = false
-         view.addSubview(statusLabel)
+            loadButton.topAnchor.constraint(equalTo: saveButton.bottomAnchor, constant: 15),
+            loadButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            loadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            loadButton.heightAnchor.constraint(equalToConstant: 50),
 
-         NSLayoutConstraint.activate([
-             inputTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-             inputTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-             inputTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-             inputTextField.heightAnchor.constraint(equalToConstant: 40),
+            outputTextView.topAnchor.constraint(equalTo: loadButton.bottomAnchor, constant: 20),
+            outputTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            outputTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            outputTextView.heightAnchor.constraint(equalToConstant: 200),
 
-             saveButton.topAnchor.constraint(equalTo: inputTextField.bottomAnchor, constant: 20),
-             saveButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-             saveButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-             saveButton.heightAnchor.constraint(equalToConstant: 50),
+            statusLabel.topAnchor.constraint(equalTo: outputTextView.bottomAnchor, constant: 15),
+            statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+    }
 
-             loadButton.topAnchor.constraint(equalTo: saveButton.bottomAnchor, constant: 15),
-             loadButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-             loadButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-             loadButton.heightAnchor.constraint(equalToConstant: 50),
+    // MARK: - Actions
+    func setupActions() {
+        saveButton.addTarget(self, action: #selector(saveText), for: .touchUpInside)
+        loadButton.addTarget(self, action: #selector(loadAllTexts), for: .touchUpInside)
+    }
 
-             outputTextView.topAnchor.constraint(equalTo: loadButton.bottomAnchor, constant: 20),
-             outputTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-             outputTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-             outputTextView.heightAnchor.constraint(equalToConstant: 200),
+    // MARK: - File Operations
+    func getDocumentsDirectory() -> URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
 
-             statusLabel.topAnchor.constraint(equalTo: outputTextView.bottomAnchor, constant: 15),
-             statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-             statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
-         ])
-     }
+    @objc func saveText() {
+        guard let textToSave = inputTextField.text, !textToSave.isEmpty else {
+            updateStatus(message: "Please type something to save.", isError: true)
+            return
+        }
 
-     // MARK: - Actions
-     func setupActions() {
-         saveButton.addTarget(self, action: #selector(saveText), for: .touchUpInside)
-         loadButton.addTarget(self, action: #selector(loadAllTexts), for: .touchUpInside)
-     }
+        let fileURL = getDocumentsDirectory().appendingPathComponent(kSavedTextFilename)
 
-     // MARK: - File Operations
-     func getDocumentsDirectory() -> URL {
-         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-     }
+        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .medium)
+        let contentToAppend = "[\(timestamp)] \(textToSave)\n"
 
-     let dateFormatter: DateFormatter = {
-         let formatter = DateFormatter()
-         formatter.dateFormat = "yyyyMMdd_HHmmss"
-         return formatter
-     }()
+        do {
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                let existingContent = try String(contentsOf: fileURL, encoding: .utf8)
+                let newContent = existingContent + contentToAppend
+                try newContent.write(to: fileURL, atomically: true, encoding: .utf8)
+                updateStatus(message: "Appended text to \(kSavedTextFilename)", isError: false)
+                print("Successfully appended text to: \(fileURL.path)")
+            } else {
+                try contentToAppend.write(to: fileURL, atomically: true, encoding: .utf8)
+                updateStatus(message: "Created and saved to \(kSavedTextFilename)", isError: false)
+                print("Successfully created and saved text to: \(fileURL.path)")
+            }
 
-     @objc func saveText() {
-         let textToSave = inputTextField.text
-         if textToSave == nil || textToSave!.isEmpty {
-             updateStatus(message: "Please type something to save.", isError: true)
-             return
-         }
+            inputTextField.text = ""
+        } catch {
+            updateStatus(message: "Save failed: \(error.localizedDescription)", isError: true)
+            print("Error saving text: \(error)")
+        }
+    }
 
-         let filename = "my_saved_text_\(dateFormatter.string(from: Date())).txt"
-         let fileURL = getDocumentsDirectory().appendingPathComponent(filename)
+    @objc func loadAllTexts() {
+        let fileURL = getDocumentsDirectory().appendingPathComponent(kSavedTextFilename)
 
-         do {
-             try textToSave!.write(to: fileURL, atomically: true, encoding: .utf8)
-             updateStatus(message: "Saved: \(filename)", isError: false)
-             inputTextField.text = ""
-             print("Successfully saved text to: \(fileURL.path)")
-         } catch {
-             updateStatus(message: "Save failed: \(error.localizedDescription)", isError: true)
-             print("Error saving text: \(error)")
-         }
-     }
+        do {
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                let loadedText = try String(contentsOf: fileURL, encoding: .utf8)
+                outputTextView.text = loadedText
+                updateStatus(message: "Content from \(kSavedTextFilename) loaded!", isError: false)
+                print("All texts loaded into output view from \(kSavedTextFilename).")
+            } else {
+                outputTextView.text = "No content to show."
+                updateStatus(message: "No saved text file found.", isError: true)
+                print("No saved text file found at \(fileURL.path)")
+            }
+        } catch {
+            updateStatus(message: "Error loading file: \(error.localizedDescription)", isError: true)
+            outputTextView.text = "Error loading content."
+            print("Error reading file \(kSavedTextFilename): \(error)")
+        }
+    }
 
-     @objc func loadAllTexts() {
-         var allTextsContent = ""
-         let documentsURL = getDocumentsDirectory()
-
-         do {
-             let fileURLs = try FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
-
-             var foundTextFiles: [URL] = []
-             for fileURL in fileURLs {
-                 if fileURL.pathExtension == "txt" && fileURL.lastPathComponent.hasPrefix("my_saved_text_") {
-                     foundTextFiles.append(fileURL)
-                 }
-             }
-
-             foundTextFiles.sort { $0.lastPathComponent < $1.lastPathComponent }
-
-             if foundTextFiles.isEmpty {
-                 updateStatus(message: "No text files found.", isError: true)
-                 outputTextView.text = "No content to show."
-                 return
-             }
-
-             for fileURL in foundTextFiles {
-                 do {
-                     let loadedText = try String(contentsOf: fileURL, encoding: .utf8)
-                     let filename = fileURL.lastPathComponent
-                     allTextsContent += "\(filename) \n"
-                     allTextsContent += loadedText + "\n\n"
-                 } catch {
-                     print("Could not read file \(fileURL.lastPathComponent): \(error.localizedDescription)")
-                     allTextsContent += "--- Error reading \(fileURL.lastPathComponent) ---\n"
-                 }
-             }
-             outputTextView.text = allTextsContent
-             updateStatus(message: "All texts loaded!", isError: false)
-             print("All texts loaded into output view.")
-         } catch {
-             updateStatus(message: "Error loading files: \(error.localizedDescription)", isError: true)
-             print("Error listing directory contents: \(error)")
-         }
-     }
-
-     // MARK: - Status Update
-     func updateStatus(message: String, isError: Bool) {
-         statusLabel.text = message
-         statusLabel.textColor = isError ? .red : .systemGreen
-         statusLabel.alpha = 1.0
-     }
- }
+    // MARK: - Status Update
+    func updateStatus(message: String, isError: Bool) {
+        statusLabel.text = message
+        statusLabel.textColor = isError ? .red : .systemGreen
+        statusLabel.alpha = 1.0
+    }
+}
