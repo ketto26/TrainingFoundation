@@ -1,0 +1,16 @@
+
+{
+      "appTitle": "My Awesome Bundled App",
+      "numberOfImagesToDisplay": 6,
+      "imageNames": [
+        "Image1.jpeg",
+        "Image2.jpeg",
+        "Image3.jpeg",
+        "Image4.jpeg",
+        "Image5.jpeg",
+        "Image6.jpeg",
+
+      ],
+      "featureEnabled": true,
+      "welcomeMessage": "Welcome to our dynamically configured app! Enjoy the view."
+    }
