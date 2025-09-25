@@ -20,14 +20,12 @@ final class APIServiceTests: XCTestCase {
     }
     
     // MARK: Fetch Users
-    
-    // pass some invalid url and assert that method completes with .failure(.invalidUrl)
-    // use expectations
+
     func test_apiService_fetchUsers_whenInvalidUrl_completesWithError() {
         let sut = makeSut()
-        let expectation = XCTestExpectation(description: "Fetch users with invalid URL should complete with error")
+        let expectation = self.expectation(description: "Fetch users with invalid URL should complete with error")
         
-        sut.fetchUsers(urlString: "not_a_valid_url") { result in
+        sut.fetchUsers(urlString: "") { result in
             if case let .failure(error) = result {
                 XCTAssertEqual(error, .invalidUrl, "Expected invalidUrl error for invalid URL string")
                 expectation.fulfill()
@@ -38,7 +36,6 @@ final class APIServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
-    // assert that method completes with .success(expectedUsers)
     func test_apiService_fetchUsers_whenValidSuccessfulResponse_completesWithSuccess() {
         let response = """
         [
@@ -64,14 +61,13 @@ final class APIServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
-    // assert that method completes with .failure(.parsingError)
     func test_apiService_fetchUsers_whenInvalidSuccessfulResponse_completesWithFailure() {
         let response = """
         [
             { "id": 1, "name": "John Doe", "username": "johndoe", "email": "johndoe@gmail.com" },
             { "id": "invalid_id", "name": "Jane Doe", "username": "janedoe", "email": "janedoe@gmail.com" }
         ]
-        """.data(using: .utf8) // Malformed JSON: "id" should be Int, not String
+        """.data(using: .utf8)
         mockURLSession.mockData = response
         
         let sut = makeSut()
@@ -88,7 +84,6 @@ final class APIServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
-    // assert that method completes with .failure(.unexpected)
     func test_apiService_fetchUsers_whenError_completesWithFailure() {
         mockURLSession.mockError = NSError(domain: "TestError", code: 1, userInfo: nil)
         
@@ -108,10 +103,9 @@ final class APIServiceTests: XCTestCase {
     
     // MARK: Fetch Users Async
     
-    // pass some invalid url and assert that method completes with .failure(.invalidUrl)
     func test_apiService_fetchUsersAsync_whenInvalidUrl_completesWithError() async {
         let sut = makeSut()
-        let result = await sut.fetchUsersAsync(urlString: "not_a_valid_url")
+        let result = await sut.fetchUsersAsync(urlString: "")
         if case let .failure(error) = result {
             XCTAssertEqual(error, .invalidUrl, "Expected invalidUrl error for invalid URL string in async fetch")
         } else {
@@ -119,8 +113,6 @@ final class APIServiceTests: XCTestCase {
         }
     }
     
-    // TODO: Implement test
-    // add other tests for fetchUsersAsync
     func test_apiService_fetchUsersAsync_whenValidSuccessfulResponse_completesWithSuccess() async {
         let response = """
         [
@@ -139,6 +131,7 @@ final class APIServiceTests: XCTestCase {
             XCTFail("Expected success but got failure for valid response in async fetch")
         }
     }
+    
     
     func test_apiService_fetchUsersAsync_whenInvalidSuccessfulResponse_completesWithFailure() async {
         let response = """
